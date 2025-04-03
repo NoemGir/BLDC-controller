@@ -1,0 +1,13 @@
+v 4
+file . "pwm.vhd" "5aac4ffa472b9f3325132b10a09da8d9d3a6eba8" "20250403113149.270":
+  entity pwm_control at 1( 0) + 0 on 201;
+  architecture pwm_control_arch of pwm_control at 21( 526) + 0 on 202;
+file . "BLDC_controller.vhd" "7982ec810cc7edfacddba14d704f6f13e80ef989" "20250403113149.283":
+  entity bldc_controller at 2( 30) + 0 on 205;
+  architecture bldc_controller_arch of bldc_controller at 41( 1107) + 0 on 206;
+file . "test_BLDC_controller.vhd" "0fd07a5e309f86f2a463c2d04c595236de539be0" "20250403113149.289":
+  entity test_bldc_controller at 2( 30) + 0 on 207;
+  architecture test_bldc_controller_arch of test_bldc_controller at 17( 453) + 0 on 208;
+file . "hall_sensor.vhd" "8dfa8be8274a74d3320c99a84d2eeaf930203cba" "20250403113149.276":
+  entity hall_sensor at 2( 29) + 0 on 203;
+  architecture hall_sensor_arch of hall_sensor at 34( 805) + 0 on 204;
