@@ -5,40 +5,44 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity pwm_control is
     generic(
-        MAX_CPT : integer := 20000 --represente le nombre de tics dans un cycle 1MHz/50 Hz = 20000
+        MAX_DUTY_VALUE : natural := 8;
+        PWN_COUNT : natural := 22
     );
     Port (
         clk : in std_logic;
-
-        duty : in integer range 0 to MAX_CPT; -- Avec duty = 0 tOFF 100% et = MAX_CPT tOn = 100%
+        duty : in natural range 0 to MAX_DUTY_VALUE;
         en : in std_logic;
         rst : in std_logic;
         pwm : out std_logic;
-        NegPwm : out std_logic 
+        pulse : out std_logic
     );
 end pwm_control;
 
 architecture pwm_control_arch of pwm_control is
-    signal counter : integer range 0 to MAX_CPT := 0;
+    signal counter : natural range 0 to PWN_COUNT := 0;
+    signal tOn_limit : natural range 0 to PWN_COUNT;
 begin
-    process (clk, rst)
-    begin
 
+    tOn_limit <= conv_integer(duty) * PWN_COUNT / MAX_DUTY_VALUE;
+    pulse <= '1' when counter = 0 and rst /= '0' else '0';
+
+
+    process (clk, rst)
+        -- variable tOn_limit : natural := conv_integer(duty) * PWN_COUNT / MAX_DUTY_VALUE;
+    begin
+        
         if rst = '0' then
             counter <= 0;
             pwm <= '0';
-            NegPwm <= '1';
         elsif rising_edge(clk) and en = '0' then
             -- traitement du signal pwn
-            if counter < duty then
+            if counter < tOn_limit then
                 pwm <= '1';
-                NegPwm <= '0';
             else
                 pwm <= '0';
-                NegPwm <= '1';
             end if;
 
-            if counter < MAX_CPT -1 then
+            if counter < PWN_COUNT then
                 counter <= counter + 1;
             else
                 counter <= 0;

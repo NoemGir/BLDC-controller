@@ -32,7 +32,7 @@ end hall_sensor ;
 
 
 architecture hall_sensor_arch of hall_sensor is
-    constant PHASE_SHIFT : natural := MAX_CPT /3;
+    constant PHASE_SHIFT : natural := MAX_CPT / 6;
 
     type state_type is (S1, S2, S3);
     signal current_state : state_type;

@@ -1,13 +1,22 @@
 v 4
-file . "pwm.vhd" "5aac4ffa472b9f3325132b10a09da8d9d3a6eba8" "20250403113149.270":
-  entity pwm_control at 1( 0) + 0 on 201;
-  architecture pwm_control_arch of pwm_control at 21( 526) + 0 on 202;
-file . "BLDC_controller.vhd" "7982ec810cc7edfacddba14d704f6f13e80ef989" "20250403113149.283":
-  entity bldc_controller at 2( 30) + 0 on 205;
-  architecture bldc_controller_arch of bldc_controller at 41( 1107) + 0 on 206;
-file . "test_BLDC_controller.vhd" "0fd07a5e309f86f2a463c2d04c595236de539be0" "20250403113149.289":
-  entity test_bldc_controller at 2( 30) + 0 on 207;
-  architecture test_bldc_controller_arch of test_bldc_controller at 17( 453) + 0 on 208;
-file . "hall_sensor.vhd" "8dfa8be8274a74d3320c99a84d2eeaf930203cba" "20250403113149.276":
-  entity hall_sensor at 2( 29) + 0 on 203;
-  architecture hall_sensor_arch of hall_sensor at 34( 805) + 0 on 204;
+file . "duty_sinusoid.vhd" "e7de41fe39f78d50c1612b2dc01e51eefc03f361" "20250404162139.176":
+  entity duty_control at 1( 0) + 0 on 1841;
+  architecture duty_control_arch of duty_control at 22( 620) + 0 on 1842;
+file . "pwm.vhd" "0aa8df05d8c763d5fac7c984bcfe8c007f0ae196" "20250404162139.171":
+  entity pwm_control at 1( 0) + 0 on 1839;
+  architecture pwm_control_arch of pwm_control at 21( 453) + 0 on 1840;
+file . "BLDC_controller.vhd" "4105fa57f3b11adb81ce52f16c0a1918212964e3" "20250404162139.192":
+  entity bldc_controller at 2( 30) + 0 on 1847;
+  architecture bldc_controller_arch of bldc_controller at 46( 1298) + 0 on 1848;
+file . "test_BLDC_controller.vhd" "ae9c92c59c61d1d598077ce2eea6bcdd7b405b47" "20250404162139.197":
+  entity test_bldc_controller at 2( 30) + 0 on 1849;
+  architecture test_bldc_controller_arch of test_bldc_controller at 17( 453) + 0 on 1850;
+file . "hall_sensor.vhd" "c674af679a84092c9298d64ddf5bafd3df9e8348" "20250403202936.289":
+  entity hall_sensor at 2( 29) + 0 on 651;
+  architecture hall_sensor_arch of hall_sensor at 34( 805) + 0 on 652;
+file . "pulse_generator.vhd" "6784970429b5925ede6f6cca9a0c22fe030e8710" "20250404162139.181":
+  entity pulse_gen at 1( 0) + 0 on 1843;
+  architecture pulse_gen_arch of pulse_gen at 17( 363) + 0 on 1844;
+file . "state_machine.vhd" "9b3a46f00220a1ebfa3df4726f92a1c4b582c453" "20250404162139.187":
+  entity state_machine at 2( 29) + 0 on 1845;
+  architecture state_machine_arch of state_machine at 40( 1009) + 0 on 1846;
