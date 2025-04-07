@@ -8,6 +8,7 @@ entity duty_control is
         MAX_CPT : integer := 20000; --represente le nombre de tics dans un cycle 1MHz/50 Hz = 20000
         DUTY_SIZE : integer := 8;
         MIN_DUTY_PERCENT : integer := 50;
+        START_COUNT : integer;
         MAX_CMP_PWN : integer := 833
     );
     port (
@@ -27,14 +28,17 @@ architecture duty_control_arch of duty_control is
     constant MIN_DUTY : integer := MAX_DUTY_VALUE * MIN_DUTY_PERCENT / 100;
     constant stop_rise : integer := INTERVAL / 2 ;
 
-    signal adapted_duty : integer range 0 to MAX_DUTY_VALUE+1;
-
     signal step : integer range 0 to MAX_DUTY_VALUE := 1;
 
     signal count : integer range 0 to INTERVAL+1 := 0;
     signal pulse : std_logic;
 
+    -- version integer de la valeur de DUTY 
     signal duty_integer : integer range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+
+    -- le duty adapté ( qui alterne entre MIN_DUTY et MAX_DUTY )
+    signal adapted_duty : integer range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+
 
 begin
 
@@ -83,7 +87,7 @@ begin
     P_count : process(clk,rst)
     begin
         if RST='0' then
-            count <= 0 ;
+            count <= START_COUNT ;
         elsif rising_edge(clk) then
 
             count <= count + 1;

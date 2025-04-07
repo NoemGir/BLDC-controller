@@ -56,8 +56,8 @@ architecture BLDC_controller_arch of BLDC_controller is
 
     signal state_change : std_logic;
 
-    signal decaled_en : std_logic;
-    signal decaled_rst : std_logic;
+    signal decaled_en : std_logic := not EN;
+    signal decaled_rst : std_logic := not RST;
 
     signal pwn_pos : std_logic;
     signal pwn_neg : std_logic;
@@ -90,14 +90,12 @@ begin
     Vn <= pwn_neg when sig1 = '1' or sig6 = '1' else '0';
     Wn <= pwn_neg when sig2 = '1' or sig3 = '1' else '0';
 
-    decaled_en <= '1' when rising_edge(state_change) and en = '1' else '0' when rising_edge(state_change) and en = '0';
-    decaled_rst <= '1' when rising_edge(state_change) and rst = '1' else '0' when rising_edge(state_change) and rst = '0';
-
     P_duty_pos : entity work.duty_control(duty_control_arch)
     generic map(
         MAX_CPT => MAX_CPT,
         DUTY_SIZE => DUTY_SIZE,
         MIN_DUTY_PERCENT => MIN_DUTY_PERCENT,
+        START_COUNT =>  0,
         MAX_CMP_PWN => MAX_CPT / 192
         )
     port map(
@@ -113,13 +111,14 @@ begin
         MAX_CPT => MAX_CPT,
         DUTY_SIZE => DUTY_SIZE,
         MIN_DUTY_PERCENT => MIN_DUTY_PERCENT,
+        START_COUNT =>  MAX_CPT / 6,
         MAX_CMP_PWN => MAX_CPT / 192
         )
     port map(
         clk => clk,
         DUTY => DUTY,
-        rst => decaled_rst,
-        en => decaled_en,
+        rst => rst,
+        en => en,
         pwm => pwn_neg
     );
 
