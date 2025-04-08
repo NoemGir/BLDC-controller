@@ -5,8 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity pwm_control is
     generic(
-        MAX_DUTY_VALUE : natural := 8;
-        PWN_COUNT : natural := 22
+        MAX_DUTY_VALUE : natural range 1 to 65536 := 8; --2¹ to 2¹⁶
+        PWN_COUNT : natural range 1 to  1000 := 22
     );
     Port (
         clk : in std_logic;

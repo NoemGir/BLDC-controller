@@ -5,11 +5,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity duty_control is
     generic(
-        MAX_CPT : integer := 20000; --represente le nombre de tics dans un cycle 1MHz/50 Hz = 20000
-        DUTY_SIZE : integer := 8;
-        MIN_DUTY_PERCENT : integer := 50;
-        START_COUNT : integer;
-        MAX_CMP_PWN : integer := 833
+        MAX_CPT : natural range 1 to 65536 := 20000; --represente le nombre de tics dans un cycle 1MHz/50 Hz = 20000
+        DUTY_SIZE : natural range 1 to 64 := 8;
+        MIN_DUTY_PERCENT : natural range 0 to 100:= 50;
+        START_COUNT : natural range 0 to 65535;
+        MAX_CMP_PWN : natural range 1 to 65536 := 833
     );
     port (
         clk : in std_logic;
@@ -22,22 +22,22 @@ end duty_control;
 
 architecture duty_control_arch of duty_control is
 
-    constant INTERVAL : integer := MAX_CPT / 3;
+    constant INTERVAL : natural range 1 to 65536 := MAX_CPT / 3;
     constant MAX_DUTY_VECTOR : std_logic_vector(DUTY_SIZE-1 downto 0) := (others => '1');
-    constant MAX_DUTY_VALUE : integer := conv_integer(max_duty_vector);
-    constant MIN_DUTY : integer := MAX_DUTY_VALUE * MIN_DUTY_PERCENT / 100;
-    constant stop_rise : integer := INTERVAL / 2 ;
+    constant MAX_DUTY_VALUE : natural range 1 to 65536 := conv_integer(max_duty_vector);
+    constant MIN_DUTY : natural := MAX_DUTY_VALUE * MIN_DUTY_PERCENT / 100;
+    constant stop_rise : natural := INTERVAL / 2 ;
 
-    signal step : integer range 0 to MAX_DUTY_VALUE := 1;
+    signal step : natural range 0 to MAX_DUTY_VALUE := 1;
 
-    signal count : integer range 0 to INTERVAL+1 := 0;
+    signal count : natural range 0 to INTERVAL+1 := 0;
     signal pulse : std_logic;
 
     -- version integer de la valeur de DUTY 
-    signal duty_integer : integer range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+    signal duty_integer : natural range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
 
     -- le duty adapté ( qui alterne entre MIN_DUTY et MAX_DUTY )
-    signal adapted_duty : integer range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+    signal adapted_duty : natural range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
 
 
 begin

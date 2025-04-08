@@ -15,7 +15,7 @@ entity state_machine is
 	-- definition des parametres generiques
 	generic	(
 		-- largeur du bus de donnees par defaut
-		MAX_CPT : integer := 20000
+		MAX_CPT : natural range 1 to 65536 := 20000
 	);
 
 	-- definition des entrees/sorties
@@ -38,7 +38,7 @@ end state_machine ;
 
 
 architecture state_machine_arch of state_machine is
-    constant PHASE_SHIFT : natural := MAX_CPT / 6;
+    constant PHASE_SHIFT : natural range 1 to 16384 := MAX_CPT / 6;
 
     type state_type is (S1, S2, S3, S4, S5, S6);
     signal current_state : state_type;
@@ -54,22 +54,39 @@ begin
         if RST = '0' then 
             current_state <= S1;
         elsif rising_edge(clk) and EN = '0'  then
-
-            if count = PHASE_SHIFT-1 then 
-                if current_state = S1 then
-                    current_state <= S2;
-                elsif current_state = S2 then
-                    current_state <= S3;
-                elsif current_state = S3 then
+            
+            if count = PHASE_SHIFT-1 then
+                case current_state is
+                    when S1 =>
+                        current_state <= S2;
+                    when S2 =>
+                        current_state <= S3;
+                    when S3 =>
                         current_state <= S4;
-                elsif current_state = S4 then
-                    current_state <= S5;
-                elsif current_state = S5 then
-                    current_state <= S6;
-                else
-                    current_state <= S1;
-                end if;
+                    when S4 =>
+                        current_state <= S5;
+                    when S5 =>
+                        current_state <= S6;
+                    when others =>
+                        current_state <= S1;
+                end case;
             end if;
+                
+--            if count = PHASE_SHIFT-1 then 
+--                if current_state = S1 then
+--                    current_state <= S2;
+--                elsif current_state = S2 then
+--                    current_state <= S3;
+--                elsif current_state = S3 then
+--                        current_state <= S4;
+--                elsif current_state = S4 then
+--                    current_state <= S5;
+--                elsif current_state = S5 then
+--                    current_state <= S6;
+--                else
+--                    current_state <= S1;
+--                end if;
+--            end if;
 
             count <= count +1;
         end if;

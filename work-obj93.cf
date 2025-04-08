@@ -1,0 +1,19 @@
+v 4
+file . "test_BLDC_controller.vhd" "d1d7c2803d58f6f99fe88ca81e83657498246c57" "20250408112658.316":
+  entity test_bldc_controller at 2( 29) + 0 on 33;
+  architecture test_bldc_controller_arch of test_bldc_controller at 17( 437) + 0 on 34;
+file . "state_machine.vhd" "9b3a46f00220a1ebfa3df4726f92a1c4b582c453" "20250408112658.234":
+  entity state_machine at 2( 29) + 0 on 29;
+  architecture state_machine_arch of state_machine at 40( 1009) + 0 on 30;
+file . "duty_sinusoid.vhd" "07229a05b55ec7cd2b944c5358f1fe989dc5c75d" "20250408112658.169":
+  entity duty_control at 1( 0) + 0 on 25;
+  architecture duty_control_arch of duty_control at 23( 651) + 0 on 26;
+file . "pwm.vhd" "0aa8df05d8c763d5fac7c984bcfe8c007f0ae196" "20250408112658.139":
+  entity pwm_control at 1( 0) + 0 on 23;
+  architecture pwm_control_arch of pwm_control at 21( 453) + 0 on 24;
+file . "pulse_generator.vhd" "6784970429b5925ede6f6cca9a0c22fe030e8710" "20250408112658.208":
+  entity pulse_gen at 1( 0) + 0 on 27;
+  architecture pulse_gen_arch of pulse_gen at 17( 363) + 0 on 28;
+file . "BLDC_controller.vhd" "29a2880db4ca62be3265f6a94a1ea0ef795812ea" "20250408112658.273":
+  entity bldc_controller at 2( 29) + 0 on 31;
+  architecture bldc_controller_arch of bldc_controller at 44( 1184) + 0 on 32;

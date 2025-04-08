@@ -14,38 +14,36 @@ entity BLDC_controller is
 
 	-- definition des parametres generiques
 	generic	(
-		-- largeur du bus de donnees par defaut
-		PHASE_CYCLE : integer := 50;
-        CLK_FREQUENCY : integer := 1000000;
-        MIN_DUTY_PERCENT : integer range 0 to 100;
-        DUTY_SIZE : integer
+	-- largeur du bus de donnees par defaut
+	PHASE_CYCLE         : natural range 0 to 200 := 50;
+    CLK_FREQUENCY       : natural range 1000 to 5000000 := 1000000; -- 1Khz to 5Mhz
+    MIN_DUTY_PERCENT    : natural range 0 to 100 := 50;
+    DUTY_SIZE           : natural range 1 to 16 := 8
 	);
 
 	-- definition des entrees/sorties
 	port 	(
-		--  Ports d'entré du controlleur'
-		clk      		: in std_logic; 
-        EN				: in std_logic; 
-        RST				: in std_logic; 
-		DUTY	    	: in std_logic_vector(DUTY_SIZE-1 downto 0); -- Avec duty = 0 tOFF 100% et = MAX_CPT tOn = 100%
-
-        H              : in std_logic; 
-        
-		-- Ports de sortie du controlleur 
-        U				: out std_logic; 
-        V				: out std_logic; 
-        W				: out std_logic; 
-        
-        Wn				: out std_logic; 
-        Vn				: out std_logic; 
-        Un				: out std_logic
+	--  Ports d'entré du controlleur'
+	clk         : in std_logic; 
+    EN          : in std_logic; 
+    RST			: in std_logic; 
+    DUTY        : in std_logic_vector(DUTY_SIZE-1 downto 0); -- Avec duty = 0 tOFF 100% et = MAX_CPT tOn = 100%
+    H           : in std_logic; 
+	-- Ports de sortie du controlleur 
+    U			: out std_logic; 
+    V			: out std_logic; 
+    W			: out std_logic; 
+    
+    Wn			: out std_logic; 
+    Vn			: out std_logic; 
+    Un			: out std_logic
     );
 end BLDC_controller;
 
 
 architecture BLDC_controller_arch of BLDC_controller is   
 
-    constant MAX_CPT : integer range 0 to CLK_FREQUENCY := CLK_FREQUENCY / PHASE_CYCLE;
+    constant MAX_CPT : natural range 0 to CLK_FREQUENCY := CLK_FREQUENCY / PHASE_CYCLE;
 
     signal sig1 : std_logic;
     signal sig2 : std_logic;
@@ -56,8 +54,8 @@ architecture BLDC_controller_arch of BLDC_controller is
 
     signal state_change : std_logic;
 
-    signal decaled_en : std_logic := not EN;
-    signal decaled_rst : std_logic := not RST;
+--    signal decaled_en : std_logic := not EN;
+--    signal decaled_rst : std_logic := not RST;
 
     signal pwn_pos : std_logic;
     signal pwn_neg : std_logic;
@@ -124,4 +122,3 @@ begin
 
 
 end BLDC_controller_arch;
-
