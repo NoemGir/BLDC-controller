@@ -32,7 +32,6 @@ architecture test_BLDC_controller_arch of test_BLDC_controller is
 	signal E_EN : std_logic; 
 	signal E_RST : std_logic; 
 	signal E_DUTY : std_logic_vector(DUTY_SIZE-1 downto 0);
-	signal E_H : std_logic;
 	signal E_U : std_logic; 
 	signal E_V : std_logic; 
 	signal E_W : std_logic; 
@@ -60,7 +59,20 @@ begin
 	-- instanciation et mapping du composant BLDC_controller
 	P_BLDC_controller : entity work.BLDC_controller(BLDC_controller_arch)
 			generic map (PHASE_CYCLE,CLK_FREQUENCY,MIN_DUTY_PERCENT, DUTY_SIZE)
-			port map (E_clk, E_EN, E_RST, E_DUTY, E_H, E_U, E_V, E_W, E_Un, E_Vn, E_Wn);
+			port map (
+			clk => E_clk,
+            EN => E_EN ,
+            RST	=> E_RST,
+            DUTY => E_DUTY,  
+            -- Ports de sortie du controlleur 
+            U => E_U,  
+            V => E_V,  
+            W => E_W,  
+            
+            Wn => E_Wn,  
+            Vn => E_Vn,  
+            Un => E_Un
+            );
 
 	-- realisation des test
 
@@ -69,7 +81,6 @@ begin
 
 		E_EN <= '1';
 		E_RST <= '0';
-		E_H <= '0';
 		E_DUTY <= max_duty_vector;
 		
 

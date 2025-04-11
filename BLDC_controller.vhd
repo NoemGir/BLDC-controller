@@ -28,7 +28,6 @@ entity BLDC_controller is
     EN          : in std_logic; 
     RST			: in std_logic; 
     DUTY        : in std_logic_vector(DUTY_SIZE-1 downto 0); -- Avec duty = 0 tOFF 100% et = MAX_CPT tOn = 100%
-    H           : in std_logic; 
 	-- Ports de sortie du controlleur 
     U			: out std_logic; 
     V			: out std_logic; 
@@ -44,57 +43,58 @@ end BLDC_controller;
 architecture BLDC_controller_arch of BLDC_controller is   
 
     constant MAX_CPT : natural range 0 to CLK_FREQUENCY := CLK_FREQUENCY / PHASE_CYCLE;
+    constant PHASE_SHIFT : natural range 1 to 16384 := MAX_CPT / 6;
+    constant MAX_CMP_PWN : natural range 1 to 16384 := MAX_CPT / 192;
 
-    signal sig1 : std_logic;
-    signal sig2 : std_logic;
-    signal sig3 : std_logic;
-    signal sig4 : std_logic;
-    signal sig5 : std_logic;
-    signal sig6 : std_logic;
-
-    signal state_change : std_logic;
-
---    signal decaled_en : std_logic := not EN;
---    signal decaled_rst : std_logic := not RST;
+    type state_type is (S1, S2, S3, S4, S5, S6);
+    signal current_state : state_type;
+    signal count : natural range 0 to PHASE_SHIFT := 0;
 
     signal pwn_pos : std_logic;
     signal pwn_neg : std_logic;
 
 begin
 
-    P_State : entity work.state_machine(state_machine_arch)
-    generic map(MAX_CPT)
-    port map(
-        clk => clk,
-        EN => en,
-        RST	=> rst,
-        H => H,
+    P_state : process (RST, clk)
+    begin
+        if count = PHASE_SHIFT then
+            count <= 0;
+        end if;
 
-		sig1 => sig1,
-        sig2 => sig2,
-        sig3 => sig3,
-        sig4 => sig4,
-        sig5 => sig5,
-        sig6 => sig6,
+        if RST = '0' then 
+            current_state <= S1;
+        elsif rising_edge(clk) and EN = '0'  then
+            
+            if count = PHASE_SHIFT-1 then
+                case current_state is
+                    when S1 => current_state <= S2;
+                    when S2 => current_state <= S3;
+                    when S3 => current_state <= S4;
+                    when S4 => current_state <= S5;
+                    when S5 => current_state <= S6;
+                    when others => current_state <= S1;
+                end case;
+            end if;
 
-        state_change => state_change
-    );
+            count <= count +1;
+        end if;
+    end process P_state;
 
-    U <= pwn_pos when sig1 = '1' or sig2 = '1' else '0';
-    V <= pwn_pos when sig3 = '1' or sig4 = '1' else '0';
-    W <= pwn_pos when sig5 = '1' or sig6 = '1' else '0';
+    U <= pwn_pos when current_state = S1 or current_state = S2 else '0';
+    V <= pwn_pos when current_state = S3 or current_state = S4 else '0';
+    W <= pwn_pos when current_state = S5 or current_state = S6 else '0';
 
-    Un <= pwn_neg when sig5 = '1' or sig4 = '1' else '0';
-    Vn <= pwn_neg when sig1 = '1' or sig6 = '1' else '0';
-    Wn <= pwn_neg when sig2 = '1' or sig3 = '1' else '0';
+    Un <= pwn_neg when current_state = S5 or current_state = S4 else '0';
+    Vn <= pwn_neg when current_state = S1 or current_state = S6 else '0';
+    Wn <= pwn_neg when current_state = S2 or current_state = S3 else '0';
 
-    P_duty_pos : entity work.duty_control(duty_control_arch)
+    P_duty_pos : entity work.pwm_manager(pwm_manager_arch)
     generic map(
         MAX_CPT => MAX_CPT,
         DUTY_SIZE => DUTY_SIZE,
         MIN_DUTY_PERCENT => MIN_DUTY_PERCENT,
-        START_COUNT =>  0,
-        MAX_CMP_PWN => MAX_CPT / 192
+        MODE =>  0,
+        MAX_CMP_PWN => MAX_CMP_PWN
         )
     port map(
         clk => clk,
@@ -104,13 +104,13 @@ begin
         pwm => pwn_pos
     );
     
-    P_duty_neg : entity work.duty_control(duty_control_arch)
+    P_duty_neg : entity work.pwm_manager(pwm_manager_arch)
     generic map(
         MAX_CPT => MAX_CPT,
         DUTY_SIZE => DUTY_SIZE,
         MIN_DUTY_PERCENT => MIN_DUTY_PERCENT,
-        START_COUNT =>  MAX_CPT / 6,
-        MAX_CMP_PWN => MAX_CPT / 192
+        MODE =>  1,
+        MAX_CMP_PWN => MAX_CMP_PWN
         )
     port map(
         clk => clk,

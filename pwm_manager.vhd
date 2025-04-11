@@ -3,12 +3,12 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity duty_control is
+entity pwm_manager is
     generic(
         MAX_CPT : natural range 1 to 65536 := 20000; --represente le nombre de tics dans un cycle 1MHz/50 Hz = 20000
         DUTY_SIZE : natural range 1 to 64 := 8;
         MIN_DUTY_PERCENT : natural range 0 to 100:= 50;
-        START_COUNT : natural range 0 to 65535;
+        MODE : natural range 0 to 1;
         MAX_CMP_PWN : natural range 1 to 65536 := 833
     );
     port (
@@ -18,9 +18,9 @@ entity duty_control is
         en : in std_logic;
         pwm : out std_logic
     );
-end duty_control;
+end pwm_manager;
 
-architecture duty_control_arch of duty_control is
+architecture pwm_manager_arch of pwm_manager is
 
     constant INTERVAL : natural range 1 to 65536 := MAX_CPT / 3;
     constant MAX_DUTY_VECTOR : std_logic_vector(DUTY_SIZE-1 downto 0) := (others => '1');
@@ -34,10 +34,10 @@ architecture duty_control_arch of duty_control is
     signal pulse : std_logic;
 
     -- version integer de la valeur de DUTY 
-    signal duty_integer : natural range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+    signal duty_integer : natural range 0 to MAX_DUTY_VALUE := MIN_DUTY;
 
     -- le duty adapté ( qui alterne entre MIN_DUTY et MAX_DUTY )
-    signal adapted_duty : natural range 0 to MAX_DUTY_VALUE+1 := MIN_DUTY;
+    signal adapted_duty : natural range 0 to MAX_DUTY_VALUE := MIN_DUTY;
 
 
 begin
@@ -49,9 +49,12 @@ begin
 
     step <= (duty_integer - MIN_DUTY) / ( INTERVAL / (MAX_CMP_PWN * 2) );
 
-
         if rst = '0' then 
-            adapted_duty <= MIN_DUTY;
+            if MODE = 0 then
+                adapted_duty <= MIN_DUTY;
+            else 
+                adapted_duty <= duty_integer;
+            end if;
         elsif rising_edge(pulse) and en = '0' then
             if count < stop_rise and adapted_duty + step <= duty_integer  then
                 adapted_duty <= adapted_duty +  step;
@@ -73,21 +76,14 @@ begin
         pulse => pulse
     );
 
-    P_pulse : entity work.pwm_control(pwm_control_arch)
-    generic map(MAX_DUTY_VALUE, MAX_CMP_PWN)
-    port map(
-        clk => clk,
-        duty => adapted_duty,
-        en => en,
-        rst => rst,
-        pwm => pwm,
-        pulse => pulse
-    );
-
     P_count : process(clk,rst)
     begin
         if RST='0' then
-            count <= START_COUNT ;
+            if MODE = 0 then
+                count <= 0;
+            else 
+                count <= MAX_CPT / 6;
+            end if;
         elsif rising_edge(clk) then
 
             count <= count + 1;
@@ -98,4 +94,4 @@ begin
         end if;
     end process P_count;
     
-end duty_control_arch;
+end pwm_manager_arch;
